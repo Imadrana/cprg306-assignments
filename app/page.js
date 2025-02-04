@@ -1,11 +1,21 @@
 import Link from "next/link";
-export default function Home() {
-  
+
+export default function HomePage() {
   return (
-    <div>
-      <h1>My app for web dev Assignments</h1>
-      <p><Link href="/week-2">Go to Week2</Link></p>
-      <p><Link href="/week-3">Go to Week3</Link></p>
-    </div>
+    <main className="p-6 text-center">
+      <h1 className="text-3xl font-bold mb-4">My App for Web Dev Assignments</h1>
+      <ul className="list-disc space-y-2">
+        <li>
+          <Link href="/week-2" className="text-blue-500 hover:underline">
+            Week 2 Assignment
+          </Link>
+        </li>
+        <li>
+          <Link href="/week-3" className="text-blue-500 hover:underline">
+            Week 3 Assignment
+          </Link>
+        </li>
+      </ul>
+    </main>
   );
 }

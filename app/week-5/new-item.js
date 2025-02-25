@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 export default function NewItem() {
   const [name, setName] = useState('');
-  const [quantity, setQuantity] = useState('');
+  const [quantity, setQuantity] = useState(1);
   const [category, setCategory] = useState('produce');
 
   const handleSubmit = (e) => {
@@ -13,7 +13,7 @@ export default function NewItem() {
     alert(`Item Added:\nName: ${name}\nQuantity: ${quantity}\nCategory: ${category}`);
      
     setName('');
-    setQuantity('');
+    setQuantity(1);
     setCategory('produce');
   };
 
@@ -33,13 +33,29 @@ export default function NewItem() {
         </div>
         <div>
           <label className="block font-medium">Quantity</label>
-          <input 
-            type="text" 
-            value={quantity} 
-            onChange={(e) => setQuantity(e.target.value)} 
-            required 
-            className="w-full p-2 border rounded" 
-          />
+          <div className="flex items-center space-x-2">
+            <button 
+              type="button" 
+              onClick={() => setQuantity((prev) => Math.max(1, prev - 1))} 
+              className="px-3 py-1 bg-gray-300 rounded"
+            >
+              -
+            </button>
+            <input 
+              type="text" 
+              value={quantity} 
+              onChange={(e) => setQuantity(Number(e.target.value) || 1)} 
+              required 
+              className="w-12 text-center p-2 border rounded" 
+            />
+            <button 
+              type="button" 
+              onClick={() => setQuantity((prev) => prev + 1)} 
+              className="px-3 py-1 bg-gray-300 rounded"
+            >
+              +
+            </button>
+          </div>
         </div>
         <div>
           <label className="block font-medium">Category</label>

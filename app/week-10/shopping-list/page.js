@@ -4,22 +4,45 @@ import { useUserAuth } from "../_utils/auth-context";
 import NewItem from "./new-item";
 import ItemList from "./item-list";
 import MealIdeas from "./meal-ideas";
-import itemsData from "./items.json";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getItems, addItem, deleteItem } from "../_services/shopping-list-service";
 
 export default function Page() {
   const { user, firebaseSignOut } = useUserAuth();
-  const [items, setItems] = useState(itemsData);
+  const [items, setItems] = useState([]);
   const [selectedItemName, setSelectedItemName] = useState("");
 
-  const handleAddItem = (item) => setItems((prev) => [...prev, item]);
+  // Load items from Firestore
+  useEffect(() => {
+    if (user) {
+      const loadItems = async () => {
+        const data = await getItems(user.uid);
+        setItems(data);
+      };
+      loadItems();
+    }
+  }, [user]);
 
+  // Add item to Firestore
+  const handleAddItem = async (item) => {
+    const id = await addItem(user.uid, item);
+    const newItem = { ...item, id };
+    setItems((prev) => [...prev, newItem]);
+  };
+
+  // Delete item from Firestore
+  const handleDeleteItem = async (item) => {
+    await deleteItem(user.uid, item.id);
+    setItems((prev) => prev.filter((i) => i.id !== item.id));
+  };
+
+  // Select an item to show meal ideas
   const handleItemSelect = (item) => {
     const cleanName = item.name.split(",")[0].trim().replace(/[^\w\s]/gi, "");
     setSelectedItemName(cleanName);
   };
 
-  //  Protect the page
+  // If user is not signed in
   if (!user) {
     return (
       <div className="p-6 text-center">
@@ -41,7 +64,11 @@ export default function Page() {
           </button>
         </div>
         <NewItem onAddItem={handleAddItem} />
-        <ItemList items={items} onItemSelect={handleItemSelect} />
+        <ItemList
+          items={items}
+          onItemSelect={handleItemSelect}
+          onItemDelete={handleDeleteItem}
+        />
       </div>
       <div className="w-1/2">
         <MealIdeas ingredient={selectedItemName} />
